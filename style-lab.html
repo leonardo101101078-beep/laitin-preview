@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LAITIN Style Lab</title>
+    <style>
+      /* ---------- shared tokens (shape / spacing / type / motion) ---------- */
+      :root {
+        --radius-sm: 10px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+        --radius-pill: 999px;
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        --space-6: 32px;
+        --fs-xs: 0.75rem;
+        --fs-sm: 0.875rem;
+        --fs-md: 1rem;
+        --fs-lg: 1.25rem;
+        --fs-xl: 1.6rem;
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --dur-fast: 160ms;
+        --dur-base: 280ms;
+        --glass-blur: 18px;
+        --glass-saturate: 160%;
+        font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+      }
+
+      /* ---------- scheme × theme color tokens ---------- */
+      /* A. 深墨藍玻璃 + 暖橘光（LOGO 色） */
+      .lab[data-scheme="a"][data-theme="dark"] {
+        --bg-0: #070b16;
+        --bg-1: #0d1426;
+        --bg-blob-1: rgba(255, 98, 40, 0.28);
+        --bg-blob-2: rgba(60, 96, 200, 0.32);
+        --text-1: #f3f5fb;
+        --text-2: #b4bdd2;
+        --text-3: #7d879f;
+        --accent: #ff6a2b;
+        --accent-ink: #1a0d06;
+        --accent-glow: rgba(255, 106, 43, 0.55);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --glass-highlight: rgba(255, 255, 255, 0.18);
+        --chip-fill: rgba(255, 106, 43, 0.12);
+        --chip-ink: #ffb08c;
+        --shadow-1: 0 12px 32px rgba(0, 0, 0, 0.45);
+      }
+      .lab[data-scheme="a"][data-theme="light"] {
+        --bg-0: #eef1f7;
+        --bg-1: #f7f8fc;
+        --bg-blob-1: rgba(255, 120, 60, 0.22);
+        --bg-blob-2: rgba(90, 130, 230, 0.2);
+        --text-1: #131a2b;
+        --text-2: #4a5570;
+        --text-3: #6b7590;
+        --accent: #e8521a;
+        --accent-ink: #ffffff;
+        --accent-glow: rgba(232, 82, 26, 0.35);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.48));
+        --glass-border: rgba(19, 26, 43, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.95);
+        --chip-fill: rgba(232, 82, 26, 0.09);
+        --chip-ink: #b13d0f;
+        --shadow-1: 0 12px 30px rgba(30, 40, 70, 0.12);
+      }
+
+      /* B. 石墨灰 + 色溫漸層光（2700K 琥珀 → 6500K 冰藍） */
+      .lab[data-scheme="b"][data-theme="dark"] {
+        --bg-0: #101113;
+        --bg-1: #17181b;
+        --bg-blob-1: rgba(255, 176, 92, 0.24);
+        --bg-blob-2: rgba(150, 205, 255, 0.22);
+        --text-1: #f2f2f0;
+        --text-2: #b9b9b4;
+        --text-3: #85857f;
+        --accent: linear-gradient(100deg, #ffb35c, #fff3dc 50%, #a9d8ff);
+        --accent-solid: #ffd9a3;
+        --accent-ink: #15130f;
+        --accent-glow: rgba(255, 214, 160, 0.45);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025));
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-highlight: rgba(255, 255, 255, 0.16);
+        --chip-fill: rgba(255, 255, 255, 0.06);
+        --chip-ink: #e9dcc6;
+        --shadow-1: 0 12px 32px rgba(0, 0, 0, 0.5);
+      }
+      .lab[data-scheme="b"][data-theme="light"] {
+        --bg-0: #ecebe8;
+        --bg-1: #f6f5f2;
+        --bg-blob-1: rgba(255, 170, 80, 0.24);
+        --bg-blob-2: rgba(120, 185, 245, 0.24);
+        --text-1: #1b1b19;
+        --text-2: #50504a;
+        --text-3: #6d6d66;
+        --accent: linear-gradient(100deg, #e8892c, #f2c58a 50%, #5fa6e0);
+        --accent-solid: #c9711f;
+        --accent-ink: #1b1b19;
+        --accent-glow: rgba(232, 137, 44, 0.32);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
+        --glass-border: rgba(27, 27, 25, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.95);
+        --chip-fill: rgba(27, 27, 25, 0.05);
+        --chip-ink: #5a4325;
+        --shadow-1: 0 12px 30px rgba(40, 35, 25, 0.12);
+      }
+
+      /* C. 近黑 + 單一暖白光暈（最極簡） */
+      .lab[data-scheme="c"][data-theme="dark"] {
+        --bg-0: #050505;
+        --bg-1: #0b0b0b;
+        --bg-blob-1: rgba(255, 238, 210, 0.16);
+        --bg-blob-2: rgba(255, 238, 210, 0.04);
+        --text-1: #f5f3ef;
+        --text-2: #a8a49d;
+        --text-3: #7a766f;
+        --accent: #f6ecdc;
+        --accent-ink: #0b0b0b;
+        --accent-glow: rgba(255, 240, 215, 0.4);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 0.12);
+        --chip-fill: transparent;
+        --chip-ink: #d9d3c8;
+        --shadow-1: 0 12px 32px rgba(0, 0, 0, 0.6);
+      }
+      .lab[data-scheme="c"][data-theme="light"] {
+        --bg-0: #f4f2ee;
+        --bg-1: #fbfaf8;
+        --bg-blob-1: rgba(255, 214, 160, 0.3);
+        --bg-blob-2: rgba(255, 214, 160, 0.08);
+        --text-1: #141413;
+        --text-2: #55534e;
+        --text-3: #74716a;
+        --accent: #141413;
+        --accent-ink: #fbfaf8;
+        --accent-glow: rgba(255, 190, 110, 0.45);
+        --glass-fill: linear-gradient(150deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.55));
+        --glass-border: rgba(20, 20, 19, 0.08);
+        --glass-highlight: rgba(255, 255, 255, 1);
+        --chip-fill: transparent;
+        --chip-ink: #3d3a35;
+        --shadow-1: 0 10px 28px rgba(30, 25, 15, 0.1);
+      }
+
+      /* ---------- page chrome ---------- */
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #1e1f22; color: #e8e8e8; }
+      .lab-head { padding: 24px 16px 8px; max-width: 1440px; margin: 0 auto; }
+      .lab-head h1 { margin: 0 0 4px; font-size: 1.3rem; }
+      .lab-head p { margin: 0; color: #a0a0a0; font-size: 0.9rem; }
+      .lab-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px; max-width: 1440px; margin: 0 auto; }
+      .row-label { grid-column: 1 / -1; margin: 16px 0 -4px; font-size: 1rem; font-weight: 600; color: #f0f0f0; }
+      .row-label small { color: #9a9a9a; font-weight: 400; margin-left: 8px; }
+      @media (max-width: 900px) { .lab-grid { grid-template-columns: minmax(0, 1fr); } .lab { padding: var(--space-3); } }
+
+      /* ---------- lab panel (simulates page background) ---------- */
+      .lab {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        padding: var(--space-5);
+        color: var(--text-1);
+        background:
+          radial-gradient(60% 50% at 85% 10%, var(--bg-blob-1), transparent 70%),
+          radial-gradient(55% 55% at 0% 100%, var(--bg-blob-2), transparent 70%),
+          linear-gradient(180deg, var(--bg-1), var(--bg-0));
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-4);
+      }
+      .lab-tag { font-size: var(--fs-xs); color: var(--text-3); letter-spacing: 0.08em; }
+
+      /* glass surface */
+      .glass {
+        background: var(--glass-fill);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      }
+      @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        .glass { background: var(--bg-1); }
+      }
+
+      /* header */
+      .site-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); }
+      .brand { display: flex; align-items: baseline; gap: var(--space-3); color: var(--text-1); text-decoration: none; }
+      .brand-latin { font-family: Arial, Helvetica, sans-serif; font-size: 1.3rem; letter-spacing: 0.28em; }
+      .brand-a { position: relative; }
+      .brand-a::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: -3px; height: 3px; border-radius: 2px; background: #ff6a2b; box-shadow: 0 0 10px rgba(255, 106, 43, 0.7); }
+      .brand-zh { font-size: var(--fs-xs); color: var(--text-2); letter-spacing: 0.2em; }
+      .header-actions { display: flex; gap: var(--space-2); }
+
+      /* buttons */
+      .btn {
+        position: relative;
+        isolation: isolate;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        min-height: 44px;
+        padding: 0 var(--space-5);
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--glass-border);
+        font: inherit;
+        font-size: var(--fs-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+      }
+      .btn::after {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        z-index: -1;
+        border-radius: inherit;
+        background: radial-gradient(120% 140% at var(--mx, 50%) var(--my, 0%), var(--accent-glow), transparent 60%);
+        opacity: 0;
+        transition: opacity var(--dur-base) var(--ease-out);
+      }
+      .btn:hover::after, .btn:focus-visible::after, .btn:active::after { opacity: 1; }
+      .btn:hover, .btn:focus-visible { box-shadow: 0 0 0 1px var(--glass-border), 0 0 24px var(--accent-glow); }
+      .btn:active { transform: scale(0.97); }
+      .btn:focus-visible { outline: 2px solid var(--accent-solid, var(--accent)); outline-offset: 2px; }
+      .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+      .btn-ghost { background: var(--glass-fill); color: var(--text-1); box-shadow: inset 0 1px 0 var(--glass-highlight); }
+      .icon-btn { width: 44px; padding: 0; font-size: 1.2rem; }
+
+      /* filter */
+      .filter-bar { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-2); }
+      .filter-trigger {
+        display: flex; flex-direction: column; align-items: flex-start;
+        min-width: 0; flex: 1 1 140px; padding: var(--space-2) var(--space-4);
+        border: 1px solid transparent; border-radius: var(--radius-sm);
+        background: transparent; color: var(--text-1); font: inherit; cursor: pointer; text-align: left;
+        transition: background var(--dur-fast), border-color var(--dur-fast);
+      }
+      .filter-trigger span { font-size: var(--fs-xs); color: var(--text-3); }
+      .filter-trigger strong { font-size: var(--fs-sm); font-weight: 600; }
+      .filter-trigger:hover, .filter-trigger[aria-expanded="true"] { background: var(--chip-fill); border-color: var(--glass-border); }
+
+      /* product */
+      .product-row { display: grid; grid-template-columns: 1.1fr 1fr; gap: var(--space-4); }
+      @media (max-width: 560px) { .product-row { grid-template-columns: 1fr; } }
+      .product-card { position: relative; display: grid; place-items: center; padding: var(--space-5); aspect-ratio: 1; }
+      .product-card::before { content: ""; position: absolute; inset: 18%; border-radius: 50%; background: radial-gradient(circle, var(--accent-glow), transparent 70%); filter: blur(20px); opacity: 0.7; }
+      .product-card img { position: relative; width: 82%; height: auto; object-fit: contain; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.35)); }
+      .product-card .round { position: absolute; top: 50%; translate: 0 -50%; }
+      .product-card .round.prev { left: var(--space-3); }
+      .product-card .round.next { right: var(--space-3); }
+      .spec { padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start; }
+      .eyebrow { margin: 0; font-size: var(--fs-xs); letter-spacing: 0.18em; color: var(--text-3); }
+      .spec h2 { margin: 0; font-size: var(--fs-xl); line-height: 1.25; }
+      .spec .sub { margin: 0; color: var(--text-2); font-size: var(--fs-sm); }
+      .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+      .metric { padding: var(--space-3); border-radius: var(--radius-sm); background: var(--chip-fill); border: 1px solid var(--glass-border); }
+      .metric span { display: block; font-size: var(--fs-xs); color: var(--text-3); }
+      .metric strong { font-size: var(--fs-lg); }
+      .tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+      .chip { padding: 4px 12px; border-radius: var(--radius-pill); font-size: var(--fs-xs); background: var(--chip-fill); color: var(--chip-ink); border: 1px solid var(--glass-border); }
+
+      /* dialog / menu sample (static) */
+      .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+      @media (max-width: 560px) { .bottom-row { grid-template-columns: 1fr; } }
+      .panel { padding: var(--space-4); }
+      .panel header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); }
+      .panel h3 { margin: 0; font-size: var(--fs-md); }
+      .menu-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+      .menu-list a { display: flex; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); color: var(--text-2); text-decoration: none; font-size: var(--fs-sm); }
+      .menu-list a small { color: var(--text-3); font-variant-numeric: tabular-nums; }
+      .menu-list a:hover, .menu-list a[aria-current] { background: var(--chip-fill); color: var(--text-1); }
+      .menu-list a[aria-current] small { color: var(--accent-solid, var(--accent)); }
+      .spec-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+      .spec-table th, .spec-table td { padding: var(--space-2) 0; text-align: left; border-bottom: 1px solid var(--glass-border); }
+      .spec-table th { color: var(--text-3); font-weight: 400; width: 46%; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .btn, .btn::after, .filter-trigger { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="lab-head">
+      <h1>LAITIN Style Lab</h1>
+      <p>3 方案 × 深／淺。結構相同，只換 token。滑過或用 Tab 鍵聚焦按鈕可看發光效果。</p>
+    </header>
+    <main class="lab-grid" id="labGrid"></main>
+
+    <template id="panelTpl">
+      <section class="lab">
+        <div class="lab-tag"></div>
+        <header class="site-header glass">
+          <a class="brand" href="#" aria-label="LAITIN 萊廷照明">
+            <span class="brand-latin" aria-hidden="true">L<span class="brand-a">A</span>ITIN</span>
+            <span class="brand-zh">萊廷照明</span>
+          </a>
+          <div class="header-actions">
+            <button class="btn btn-ghost icon-btn" type="button" aria-label="切換深淺色">◐</button>
+            <button class="btn btn-ghost icon-btn" type="button" aria-label="開啟綜合選單">☰</button>
+          </div>
+        </header>
+        <div class="filter-bar glass" role="group" aria-label="產品篩選">
+          <button class="filter-trigger" type="button" aria-expanded="true"><span>系列</span><strong>A.撥碼+開關變色系列</strong></button>
+          <button class="filter-trigger" type="button" aria-expanded="false"><span>類型</span><strong>支架投光燈</strong></button>
+          <button class="filter-trigger" type="button" aria-expanded="false"><span>品項</span><strong>WE-超薄三色款</strong></button>
+        </div>
+        <div class="product-row">
+          <div class="product-card glass">
+            <img src="分頁資料/1.可調色燈具系列/圖片資料/N1-002-005/900.png" alt="支架投光燈 WE-超薄三色款" />
+            <button class="btn btn-ghost icon-btn round prev" type="button" aria-label="上一個品項">‹</button>
+            <button class="btn btn-ghost icon-btn round next" type="button" aria-label="下一個品項">›</button>
+          </div>
+          <div class="spec glass">
+            <p class="eyebrow">目前規格</p>
+            <h2>支架投光燈</h2>
+            <p class="sub">WE-超薄三色款・50w/三色+功率撥碼</p>
+            <div class="metrics">
+              <div class="metric"><span>輸入電壓</span><strong>85~265</strong></div>
+              <div class="metric"><span>功率</span><strong>50</strong></div>
+            </div>
+            <div class="tags"><span class="chip">投光燈</span><span class="chip">三色指撥</span><span class="chip">功率撥碼</span></div>
+            <div class="header-actions">
+              <button class="btn btn-primary" type="button">規格表</button>
+              <button class="btn btn-ghost" type="button">產品圖片</button>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-row">
+          <div class="panel glass">
+            <header><h3>綜合選單</h3><button class="btn btn-ghost icon-btn" type="button" aria-label="關閉">×</button></header>
+            <ul class="menu-list">
+              <li><a href="#" aria-current="page"><small>01</small>可調色燈具系列</a></li>
+              <li><a href="#"><small>02</small>調光色體驗室</a></li>
+              <li><a href="#"><small>03</small>公司介紹</a></li>
+              <li><a href="#"><small>04</small>其他產品</a></li>
+            </ul>
+          </div>
+          <div class="panel glass">
+            <header><h3>規格表</h3><button class="btn btn-ghost icon-btn" type="button" aria-label="關閉">×</button></header>
+            <table class="spec-table">
+              <tr><th>光束角</th><td>100</td></tr>
+              <tr><th>光效(lm/w)</th><td>100</td></tr>
+              <tr><th>顯色指數(Ra)</th><td>90</td></tr>
+              <tr><th>色溫</th><td>三色指撥</td></tr>
+            </table>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <script>
+      const schemes = [
+        { id: "a", name: "A 深墨藍玻璃 + 暖橘光", note: "沿用 LOGO 橘" },
+        { id: "b", name: "B 石墨灰 + 色溫漸層光", note: "2700K 琥珀 → 6500K 冰藍，呼應可調色" },
+        { id: "c", name: "C 近黑 + 單一暖白光暈", note: "最極簡" },
+      ];
+      const grid = document.querySelector("#labGrid");
+      const tpl = document.querySelector("#panelTpl");
+      for (const s of schemes) {
+        const label = document.createElement("h2");
+        label.className = "row-label";
+        label.innerHTML = `${s.name}<small>${s.note}</small>`;
+        grid.append(label);
+        for (const theme of ["dark", "light"]) {
+          const node = tpl.content.firstElementChild.cloneNode(true);
+          node.dataset.scheme = s.id;
+          node.dataset.theme = theme;
+          node.setAttribute("aria-label", `${s.name}・${theme === "dark" ? "深色" : "淺色"}`);
+          node.querySelector(".lab-tag").textContent = `${s.id.toUpperCase()} / ${theme === "dark" ? "DARK" : "LIGHT"}`;
+          grid.append(node);
+        }
+      }
+      // glow follows pointer
+      grid.addEventListener("pointermove", (e) => {
+        const btn = e.target.closest(".btn");
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty("--mx", `${((e.clientX - r.left) / r.width) * 100}%`);
+        btn.style.setProperty("--my", `${((e.clientY - r.top) / r.height) * 100}%`);
+      });
+    </script>
+  </body>
+</html>
