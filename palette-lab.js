@@ -3,7 +3,16 @@
 
   // Palette picker for client review (?lab=1). Each theme remembers its own palette,
   // stored as laitin-palette-dark / laitin-palette-light and applied early by the inline head script.
-  if (!new URLSearchParams(location.search).has("lab")) return;
+  // ?lab=1 sticks for the browser tab so the panels survive menu navigation (?page=N)
+  const labMode = (() => {
+    try {
+      if (new URLSearchParams(location.search).has("lab")) sessionStorage.setItem("laitin-lab", "1");
+      return sessionStorage.getItem("laitin-lab") === "1";
+    } catch (error) {
+      return new URLSearchParams(location.search).has("lab");
+    }
+  })();
+  if (!labMode) return;
 
   const PALETTES = {
     dark: [

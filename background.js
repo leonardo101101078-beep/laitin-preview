@@ -11,6 +11,15 @@
   const params = new URLSearchParams(location.search);
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const noHover = matchMedia("(hover: none)").matches;
+  // ?lab=1 sticks for the browser tab so the panels survive menu navigation (?page=N)
+  const labMode = (() => {
+    try {
+      if (new URLSearchParams(location.search).has("lab")) sessionStorage.setItem("laitin-lab", "1");
+      return sessionStorage.getItem("laitin-lab") === "1";
+    } catch (error) {
+      return new URLSearchParams(location.search).has("lab");
+    }
+  })();
 
   const readStored = () => {
     try {
@@ -171,5 +180,5 @@
 
   resize();
   apply();
-  if (params.has("lab")) renderLab();
+  if (labMode) renderLab();
 })();
